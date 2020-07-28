@@ -1,13 +1,10 @@
-from gevent import monkey
-monkey.patch_all()
-
 import os
+from datetime import datetime
 
-from flask import Flask, render_template, request, send_from_directory, send_file
-from gevent import joinall
-from gevent.pool import Pool
+from flask import Flask, render_template, request, send_file
+from dateutil.relativedelta import relativedelta
 
-from app.data import get_countries, get_population, calc_factor
+from app.data import get_countries, get_population, calc_factor, to_str
 
 
 app = Flask(
@@ -24,9 +21,12 @@ app = Flask(
 @app.route('/index.html/<days>')
 def index(days=14):
 
-    date = '2020-07-24'
+    date = to_str(datetime.now().date() - relativedelta(days=1))
 
-    countries = get_countries()
+    countries = [
+        country for country in get_countries()
+        if int(get_population(country['Country']) or 0) > 100000
+    ]
     res = []
     # pool = Pool(1)
     # jobs = [
@@ -42,10 +42,9 @@ def index(days=14):
         calc_factor(country['Slug'], country['Country'], date, days)
         for country in countries
     ]
-    for country, factor, conf in data:
-        # country, factor, conf = entry[0], entry[1], entry[2]
+    for country, factor, conf, sicked in data:
         pop = get_population(country)
-        res.append((country, round(factor or 0, 0), pop, conf))
+        res.append((country, round(factor or 0, 1), pop, conf, sicked))
 
     return render_template(
         'index.html',

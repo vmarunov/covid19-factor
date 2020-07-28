@@ -30,15 +30,17 @@
 <body>
 
 <div>
-    {{ date }}<br>
-    {{ days }}
+    Расчет показателя <b>factor</b> на <b>{{ date }}</b> - <br>
+    число заболевших за <b>{{ days }}</b> дней на <b>100 000</b> человек<br>
+    для стран с населением больше <b>100 000</b> человек
 </div>
 
 <table class="sortable">
     <tr>
-        <th>Country</th>
-        <th>Poulation</th>
-        <th>Confirmed on {{ date }}</th>
+        <th>Страна</th>
+        <th>Население</th>
+        <th>Подтвержденных случаев на {{ date }}</th>
+        <th>Заболевших за {{ days }} дней</th>
         <th>factor</th>
     </tr>
 {% for entry in data %}
@@ -46,6 +48,7 @@
         <td>{{ entry[0] }}</td>
         <td>{{ entry[2] }}</td>
         <td>{{ entry[3] }}</td>
+        <td>{{ entry[4] }}</td>
         <td>{{ entry[1] }}</td>
     </tr>
 {% endfor %}

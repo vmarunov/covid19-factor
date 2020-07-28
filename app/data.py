@@ -43,7 +43,9 @@ def get_confirmed(country, date):
             data = requests.get(
                 f'{HOST}/country/{country}/status/confirmed?'
                 f'from={prev_date}&to={date}').json()
-            CONFIRMED[key] = data[-1]['Cases']
+            CONFIRMED[key] = [
+                entry for entry in data
+                if entry['Province'] == ''][-1]['Cases']
             sleep(2)
         except:
             print(data)
@@ -55,11 +57,12 @@ def get_confirmed(country, date):
 def calc_factor(slug, country, date, days=14):
     population = get_population(country)
     if not population:
-        return country, None, None
+        return country, None, None, None
     confirmed_end = get_confirmed(slug, date)
     confirmed_begin = get_confirmed(slug, add_days(date, -days))
-    factor = (confirmed_end - confirmed_begin) / (population / 100000)
-    return country, factor, confirmed_end
+    sicked = confirmed_end - confirmed_begin
+    factor = sicked / (population / 100000)
+    return country, factor, confirmed_end, sicked
 
 
 def get_population(country):
