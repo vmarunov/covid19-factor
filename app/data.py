@@ -40,12 +40,18 @@ def get_confirmed(country, date):
     if key not in CONFIRMED:
         try:
             prev_date = add_days(date, -1)
-            data = requests.get(
-                f'{HOST}/country/{country}/status/confirmed?'
-                f'from={prev_date}&to={date}').json()
-            CONFIRMED[key] = [
-                entry for entry in data
-                if entry['Province'] == ''][-1]['Cases']
+            data = [
+                entry for entry in requests.get(
+                    f'{HOST}/country/{country}/status/confirmed?'
+                    f'from={prev_date}&to={date}').json()
+                if entry['Date'].startswith('date')
+            ]
+            totals = [entry for entry in data if entry['Province'] == '']
+            if totals:
+                CONFIRMED[key] = totals[0]['Cases']
+            else:
+                CONFIRMED[key] = sum(
+                    [int(entry['Cases'] or 0) for entry in data])
             sleep(2)
         except:
             print(data)
