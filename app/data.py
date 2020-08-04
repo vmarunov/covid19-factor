@@ -44,7 +44,7 @@ def get_confirmed(country, date):
                 entry for entry in requests.get(
                     f'{HOST}/country/{country}/status/confirmed?'
                     f'from={prev_date}&to={date}').json()
-                if entry['Date'].startswith('date')
+                if entry['Date'].startswith(date)
             ]
             totals = [entry for entry in data if entry['Province'] == '']
             if totals:
