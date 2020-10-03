@@ -37,6 +37,7 @@ def get_countries():
 def get_confirmed(country, date):
     global CONFIRMED
     key = date + ',' + country
+    data = None
     if key not in CONFIRMED:
         try:
             prev_date = add_days(date, -1)
@@ -53,7 +54,8 @@ def get_confirmed(country, date):
                 CONFIRMED[key] = sum(
                     [int(entry['Cases'] or 0) for entry in data])
             sleep(2)
-        except:
+        except Exception as exc:
+            print(exc)
             print(data)
             sleep(2)
             CONFIRMED[key] = 0
